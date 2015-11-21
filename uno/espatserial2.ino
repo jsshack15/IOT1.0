@@ -12,7 +12,7 @@ DallasTemperature sensors(&oneWire);
 
 SoftwareSerial esp8266(10,11);
 char a;
-int flag=0,temp;
+int flag=0,flag2=0,temp,irsense;
 float tempc;
 
 void setup()
@@ -52,20 +52,25 @@ void loop()
       a = esp8266.read();
 
       if(a == '0')
-      digitalWrite(4,LOW);
+      digitalWrite(4,HIGH);
       if(a == '1')
-      digitalWrite(5,LOW);
+      digitalWrite(5,HIGH);
       if(a == '2')
-      digitalWrite(6,LOW);
+      digitalWrite(6,HIGH);
       flag=1;
       if(a == '3')
       flag = 2;
       if(a == '4')
       {
-        analogRead(0);
+      irsense =  analogRead(0);
+      if(irsense < 50)
+      
+        flag2=0;
+      
+        else
+        flag2=1;
+         flag = 3;
       }
-      flag = 3;
-
       sendHTTPResponse(connectionId,flag);
 
       String closeCommand = "AT+CIPCLOSE=";
@@ -126,6 +131,13 @@ void sendHTTPResponse(int connectionId, int res)
   if(res == 2)
   {
    content = String(temp);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+  }
+  if(res == 3)
+  {
+    if (flag2 == 0 )
+    content = "yes";
+    else 
+    content = "no";
   }
   
   httpHeader = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n";
